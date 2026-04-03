@@ -1,5 +1,4 @@
-<html>
-    <html lang="en">
+<html lang="en">
         <head>
             <title>Playlist Generator</title>
             <script src="https://cdn.tailwindcss.com"></script>
@@ -103,7 +102,7 @@ body{
     <div class="artist">{{song.artist or "Unknown"}}</div>
 {% if song.audio%}
 
-<div class="player">
+<div class="player"> 
     <button onclick="playSong(this)">▶</button>
     <div class="bar">
         <div class="progress"></div>
@@ -126,19 +125,49 @@ body{
             <script>
             function playSong(btn){
                 const player = btn.parentElement;
+                const card = player.parentElements;
                 const audio = player.querySelector("audio");
                 const progress = player.querySelector(".progress");
+                
+                const time= player.querySelector(".time");
+
+                document.querySelectorAll("audio").forEach(a => {
+                    if(a !== audio){
+                        a.pause();
+                    }
+                });
+document.querySelectorAll(".player button").forEach(b=>{
+    if(b !== btn) b.innerText="▶";
+})
                  if (audio.paused){
-                    audio.play();
+                    audio.play().then(() => {
                     btn.innerText = "⏸";
+                });
                  }else{
                     audio.pause();
                     btn.innerText="▶"
                  }
                  audio.ontimeupdate = () => {
-                    let percent = (audio.currentTime / audio.duration)*100;
+                    let percent = audio.duration ? (audio.currentTime / audio.duration)*100: 0;
                     progress.style.width = percent + "%";
+
+                    let min = Math.floor(audio.currentTime/60);
+                    let sec = Math.floor(audio.currentTime % 60);
+                    sec = sec < 10 ? "0" + sec : sec;
+
+                    time.innerText = min + ":" + sec;
+                 };
+                 audio.onended =() => {
+                    const nextCard = card.nextElementSibling;
+
+                    if(nextCard){
+                        const nextbtn = nextcard.querySelector("button");
+                        if(nextBtn){
+                            nextBtn.click();
+                        }
+                    }
                  };
                 }
+            
             </script>
 </html>
