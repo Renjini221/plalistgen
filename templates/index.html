@@ -121,11 +121,15 @@ body{
 >No playlist yet</div>   
 {% endif %}
 </div>
+<button onclick="downloadPlaylist()" class="btn">
+Download .txt
+
+</button>
             </body>
             <script>
             function playSong(btn){
                 const player = btn.parentElement;
-                const card = player.parentElements;
+                const card = player.parentElement;
                 const audio = player.querySelector("audio");
                 const progress = player.querySelector(".progress");
                 
@@ -161,12 +165,32 @@ document.querySelectorAll(".player button").forEach(b=>{
                     const nextCard = card.nextElementSibling;
 
                     if(nextCard){
-                        const nextbtn = nextcard.querySelector("button");
+                        const nextbtn = nextCard.querySelector("button");
                         if(nextBtn){
                             nextBtn.click();
                         }
                     }
                  };
+                }
+                function downloadPlaylist(){
+                    let text = "";
+
+                document.querySelectorAll(".card").forEach(card =>{
+                    const title = card.querySelector(".title")?.innerText || "";
+                    const artist = card.querySelector(".artist")?.innerText || "";
+                    if(title){
+                        text += title + "-" + artist + "\n";
+
+                    }
+                });
+                const blob = new Blob([text],{type:"text/plain"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "playlist.txt";
+                a.click();
+
+
                 }
             
             </script>
