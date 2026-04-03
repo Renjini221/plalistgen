@@ -79,6 +79,19 @@ body{
     padding:5px 10px;
     border-radius:4px;
 }
+#suggestions{
+    background:#1a1a1a;
+    border:1px solid #333;
+    border-radius:6px;
+    margin-top:5px;
+    max-height:150px;
+    overflow-y:auto;
+}
+#suggestions div{
+    padding:8px;
+    cursor:pointer;
+}
+
             </style>
             </head>
             <body>
@@ -87,7 +100,8 @@ body{
 <div class="sub">Type a vibe and get the music</div>
 <div class="box">
     <form method="POST">
-        <input class="input" name="prompt" required>
+        <input class="input" name="prompt" id="searchBox" autocomplete="off" required>
+        <div id="suggestions"></div>
         <button class="btn">Generate</button>
     </form>
 </div>
@@ -129,7 +143,7 @@ Download .txt
             <script>
             function playSong(btn){
                 const player = btn.parentElement;
-                const card = player.parentElement;
+                const card = player.closest(".card");
                 const audio = player.querySelector("audio");
                 const progress = player.querySelector(".progress");
                 
@@ -140,7 +154,7 @@ Download .txt
                         a.pause();
                     }
                 });
-document.querySelectorAll(".player button").forEach(b=>{
+document.querySelectorAll(".player button") .forEach(b=>{
     if(b !== btn) b.innerText="▶";
 })
                  if (audio.paused){
@@ -165,7 +179,7 @@ document.querySelectorAll(".player button").forEach(b=>{
                     const nextCard = card.nextElementSibling;
 
                     if(nextCard){
-                        const nextbtn = nextCard.querySelector("button");
+                        const nextBtn = nextCard.querySelector("button");
                         if(nextBtn){
                             nextBtn.click();
                         }
@@ -192,6 +206,32 @@ document.querySelectorAll(".player button").forEach(b=>{
 
 
                 }
-            
+                const searchBox = document.getElementById("searchBox");
+                const suggestionsBox = document.getElementById("suggestions");
+
+                searchBox.addEventListener("input",async() =>{
+                    const query = searchBox.value.trim();
+
+                    if(query.length < 2){
+                        suggestionsBox.innerHTML="";
+                        return;
+                    }
+                    try{
+                        const res = await fetch(`/suggest?q=${query}`);
+                        const data = await res.json();
+
+                        suggestionsBox.innerHTML = data.map(s =>
+                            `<div onclick="selectSuggestion('${s}')">${s}</div>`
+                        ).join("");
+                    }catch(e){
+                        console.log(e);
+                        suggestionBox.innerHTML = "";
+                    }
+                });
+
+                function selectSuggestion(text){
+                    searchBox.value = text;
+                    suggestionsBox.innerHTML= "";
+                }
             </script>
 </html>
