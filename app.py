@@ -1,12 +1,13 @@
 from flask import Flask,render_template,request
 import requests
+from flask import jsonify
 app = Flask(__name__)
 
 def fix_metadata(song_name):
     url="https://openrouter.ai/api/v1/chat/completions"
 
     headers = {
-        "Authorization": "Bearer Apikey",
+        "Authorization": "Bearer apikey",
         "Content-Type": "application/json"
     }
     prompt = f"""
@@ -27,7 +28,7 @@ def fix_metadata(song_name):
            return title.strip(), artist.strip()
     except:
          pass
-    return song_name,"unknown"
+    return song_name,"Unknown"
 
 
 def get_songs(query):
@@ -50,6 +51,8 @@ def get_songs(query):
         
         if artist == "Unknown" or len(name) > 40:
             new_name,new_artist = fix_metadata(clean_name)
+        else:
+            new_name, new_artist =name, artist
 
         songs.append({
             "name":new_name,
@@ -72,5 +75,23 @@ def index():
                 songs=get_songs(prompt)
 
         return render_template("index.html",songs=songs)
+@app.route("/suggest")
+def suggest():
+    q = request.args.get("q","")
+
+    url=f"https://saavn.sumit.co/api/search/songs?query={q}"
+    try:
+        res = requests.get(url).json()
+        results = res.get("data",{}).get("results",[])
+
+        suggestions = []
+        for item in results[:5]:
+            name = item.get("name","")
+            artist = item.get("primaryArtists") or ""
+            suggestions.append(f"{name} - {artist}")
+
+        return jsonify(suggestions)
+    except:
+        return[]
 if __name__=="__main__":
    app.run(debug=True)  
