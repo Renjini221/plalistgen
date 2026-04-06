@@ -43,6 +43,14 @@ body{
     border-radius:6px;
     cursor:pointer;
 }
+.btn two{
+    width:100%;
+    padding:10px;
+    background:#16a34a;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
 .btn:hover{
     background:#15803d;
 }
@@ -90,6 +98,17 @@ body{
 #suggestions div{
     padding:8px;
     cursor:pointer;
+}
+.loadbtn{
+    .loadbtn{
+     width:100%;
+    padding:10px;
+    background:#16a34a;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+
+}
 }
 
             </style>
@@ -139,6 +158,13 @@ body{
 Download .txt
 
 </button>
+<button onclick="savePlaylist()" class="btn">
+    Save Playlist
+</button>
+
+<a href="load" class="loadbtn">
+  <button class="loadbtn">Load Playlist</button>
+</a>
             </body>
             <script>
             function playSong(btn){
@@ -233,5 +259,46 @@ document.querySelectorAll(".player button") .forEach(b=>{
                     searchBox.value = text;
                     suggestionsBox.innerHTML= "";
                 }
+               function savePlaylist(){
+    const songs = [];
+
+    document.querySelectorAll(".card").forEach(card=>{
+        const titleEl = card.querySelector(".title");
+        const artistEl = card.querySelector(".artist");
+        const audioEl = card.querySelector("audio");
+        const imgEl = card.querySelector("img");
+
+        const title = titleEl ? titleEl.innerText.trim() : null;
+        const artist = artistEl ? artistEl.innerText.trim() : "Unknown";
+        const audio = audioEl ? audioEl.src : "";
+        const img = imgEl ? imgEl.src : "";
+
+        // 🔥 IMPORTANT: only push VALID songs
+        if(title && audio){
+            songs.push({
+                name: title,
+                artist: artist,
+                audio: audio,
+                img: img
+            });
+        }
+    });
+
+    if(songs.length === 0){
+        alert("No valid songs to save!");
+        return;
+    }
+
+    let all = JSON.parse(localStorage.getItem("playlists")) || {};
+    const name = document.getElementById("searchBox").value || "My Playlist";
+
+    all[name] = songs;
+
+    localStorage.setItem("playlists", JSON.stringify(all));
+
+    console.log("Saved:", songs); // 🔥 debug
+    alert("Playlist saved");
+}
+                
             </script>
 </html>
