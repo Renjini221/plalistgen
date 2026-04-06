@@ -7,7 +7,7 @@ def fix_metadata(song_name):
     url="https://openrouter.ai/api/v1/chat/completions"
 
     headers = {
-        "Authorization": "Bearer apikey",
+        "Authorization": "Bearer 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",
         "Content-Type": "application/json"
     }
     prompt = f"""
@@ -93,5 +93,10 @@ def suggest():
         return jsonify(suggestions)
     except:
         return[]
-if __name__=="__main__":
-   app.run(debug=True)  
+@app.route("/load")
+def load():
+    return render_template("/load.html")
+
+
+
+app=app
