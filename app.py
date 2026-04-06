@@ -1,15 +1,16 @@
 from flask import Flask,render_template,request
 import requests
+import os
 from flask import jsonify
 app = Flask(__name__)
 
 def fix_metadata(song_name):
     url="https://openrouter.ai/api/v1/chat/completions"
 
-    headers = {
-        "Authorization": "Bearer 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",
-        "Content-Type": "application/json"
-    }
+  headers = {
+    "Authorization": f"Bearer {os.environ.get('apikey')}",
+    "Content-Type": "application/json"
+}
     prompt = f"""
     Give me  correct song title and artist for this:{song_name}
     Format strictly:title - Artist
