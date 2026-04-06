@@ -100,4 +100,4 @@ def load():
 
 
 
-app=app
+application = app
