@@ -8,7 +8,7 @@ def fix_metadata(song_name):
     url="https://openrouter.ai/api/v1/chat/completions"
 
   headers = {
-    "Authorization": f"Bearer {os.environ.get('apikey')}",
+    "Authorization": f"Bearer {os.environ.get('OPENROUTER_API_KEY')}",
     "Content-Type": "application/json"
 }
     prompt = f"""
