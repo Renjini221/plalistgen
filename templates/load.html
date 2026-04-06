@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <title>lOADED</title>
+        <style>
+            body{
+                background:#111;
+                color:#eee;
+                font-family:sans-serif;
+            }
+            .wrap{
+                max-width:600px;
+                margin:auto;
+                padding:20px;
+            }
+            .card{
+                display:flex;
+                gap:12px;
+                background:#1a1a1a;
+                padding:12px;
+                margin-top:10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <h2>My Playlist</h2>
+            <div id="content">
+
+            </div>
+        </div>
+        <script>
+           function loadPlaylist(){
+    const data = JSON.parse(localStorage.getItem("playlists"));
+    const container = document.getElementById("content");
+
+    container.innerHTML = "";
+
+    if(!data){
+        alert("No playlist saved");
+        return;
+    }
+
+    for(let name in data){
+
+        const title = document.createElement("div");
+        title.className = "playlist-title";
+        title.innerText = name;
+        title.style.marginTop = "20px";
+        title.style.fontWeight = "bold";
+
+        container.appendChild(title);
+
+        // 🔥 FIXED LOOP
+        data[name].forEach(song => {
+
+            const card = document.createElement("div");
+            card.className = "card";
+
+           card.innerHTML = `
+    ${song.img ? `<img src="${song.img}" style="width:60px;height:60px;">` : ""}
+    <div style="flex:1">
+        <div class="title">${song.name || song.title || "No Title"}</div>
+        <div class="artist">${song.artist || "Unknown"}</div>
+
+        <div class="player">
+            <audio controls src="${song.audio || ""}"></audio>
+        </div>
+    </div>
+`;
+
+            container.appendChild(card);
+        });
+    }
+}
+
+loadPlaylist();
+        </script>
+    </body>
+</html>
