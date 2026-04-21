@@ -58,7 +58,12 @@ def get_songs(query):
         audio_list = item.get("downloadUrl", [])
         img_list = item.get("image", [])
         name = item.get("name", "")
-        artist = item.get("primaryArtists") or "Unknown"
+        artist = (
+            item.get("primaryArtist") or
+            item.get("artist,{}").get("primary",[{}])[0].get("name","") or 
+            item.get("singers") or 
+            "Unknown"
+        )
         clean_name = name.split("(")[0].strip()
         if artist == "Unknown" or len(name) > 40:
             new_name, new_artist = fix_metadata(clean_name)
