@@ -33,7 +33,7 @@ def fix_metadata(song_name):
     No extra text
     """
     data = {
-        "model": "openai/gpt-3.5-turbo",
+        "model": "google/gemini-flash-1.5",
         "messages": [{"role": "user", "content": prompt}]
     }
     try:
@@ -64,6 +64,8 @@ def get_songs(query):
             new_name, new_artist = fix_metadata(clean_name)
         else:
             new_name, new_artist = name, artist
+        if not new_name or new_name.lower() in ["title","unknown",""]:
+            continue    
         songs.append({
             "name": new_name,
             "artist": new_artist,
