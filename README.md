@@ -42,3 +42,6 @@ When the user clicks ▶ on a card, the `playSong()` JavaScript function:
 - **Download .txt** — exports the playlist as a text file
 - **Save Playlist** — saves the current playlist to `localStorage`
 - **Load Playlist** — the `/load` page reads saved playlists from `localStorage` and renders them
+
+## AI decleration
+- Styled and Debugged by claude
