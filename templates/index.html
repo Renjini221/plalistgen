@@ -116,7 +116,7 @@ body{
             <body>
                 <div class="wrap">
 <div class="head">Playlist Generator</div>
-<div class="sub">Type a vibe and get the music</div>
+<div class="sub">Type a mood,artist or song - we will find the music</div>
 <div class="box">
     <form method="POST">
         <input class="input" name="prompt" id="searchBox" autocomplete="off" required>
@@ -273,7 +273,7 @@ document.querySelectorAll(".player button") .forEach(b=>{
         const audio = audioEl ? audioEl.src : "";
         const img = imgEl ? imgEl.src : "";
 
-        // 🔥 IMPORTANT: only push VALID songs
+        
         if(title && audio){
             songs.push({
                 name: title,
@@ -296,7 +296,7 @@ document.querySelectorAll(".player button") .forEach(b=>{
 
     localStorage.setItem("playlists", JSON.stringify(all));
 
-    console.log("Saved:", songs); // 🔥 debug
+    console.log("Saved:", songs); 
     alert("Playlist saved");
 }
                 
