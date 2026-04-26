@@ -47,9 +47,14 @@ def fix_metadata(song_name):
     return song_name, "Unknown"
 
 def get_songs(query):
-    url = f"https://saavn.sumit.co/api/search/songs?query={query}"
+    url = f"https://saavn.sumit.co/api/search/songs?query={query}&limit=10"
     try:
         res = requests.get(url).json()
+        res.raise_for_status()
+        data=res.json()
+        print(f"Saavn response keys:{data.keys()}")
+        print(f"Saavn data sample:{str(data)[:500]}")
+
     except:
         return []
     songs = []
