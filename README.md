@@ -49,6 +49,9 @@ When the user clicks ▶ on a card, the `playSong()` JavaScript function:
 
 -I was very interested in making something music related,Also i was plannin to do a project using api and all,this was my first project project using api's
 
+## How to use it
+ - just type whats ur mood or what song u want to here it will show a playlist related to it.
+
 ## Gallery
 -<img width="1919" height="937" alt="Screenshot 2026-05-02 075554" src="https://github.com/user-attachments/assets/efa3c97b-50f0-4fae-83fc-d6089e9621d6" />
 - <img width="1907" height="930" alt="Screenshot 2026-05-02 075729" src="https://github.com/user-attachments/assets/0a94aab9-b5ce-4651-aceb-89f49ac4dc5b" />
