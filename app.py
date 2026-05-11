@@ -21,64 +21,28 @@ Format: "Song Title Artist Name", one per line. No numbering, no extra text."""
     except:
         return [vibe]
 
-def fix_metadata(song_name):
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {os.environ.get('OPENROUTER_API_KEY')}",
-        "Content-Type": "application/json"
-    }
-    prompt = f"""
-    Give me correct song title and artist for this: {song_name}
-    Format strictly: Title - Artist
-    No extra text
-    """
-    data = {
-        "model": "google/gemini-flash-1.5",
-        "messages": [{"role": "user", "content": prompt}]
-    }
-    try:
-        res = requests.post(url, headers=headers, json=data).json()
-        output = res["choices"][0]["message"]["content"]
-        if "-" in output:
-            title, artist = output.split("-", 1)
-            return title.strip(), artist.strip()
-    except:
-        pass
-    return song_name, "Unknown"
-
 def get_songs(query):
-    url = f"https://saavn.sumit.dev/api/search/songs?query={query}&limit=10"
+    url = f"https://itunes.apple.com/search?term={query}&media=music&limit=2"
     try:
-        res = requests.get(url)         
-        res.raise_for_status()           
-        data = res.json()               
+        res = requests.get(url)
+        res.raise_for_status()
+        data = res.json()
     except:
         return []
 
     songs = []
-    results = data.get("data", {}).get("results", [])  
-    for item in results[:2]:
-        audio_list = item.get("downloadUrl", [])
-        img_list = item.get("image", [])
-        name = item.get("name", "")
-        artist = (
-            item.get("primaryArtist") or
-            item.get("artist", {}).get("primary", [{}])[0].get("name", "") or 
-            item.get("singers") or
-            "Unknown"
-        )
-        clean_name = name.split("(")[0].strip()
-        if artist == "Unknown" or len(name) > 40:
-            new_name, new_artist = fix_metadata(clean_name)
-        else:
-            new_name, new_artist = name, artist
-        if not new_name or new_name.lower() in ["title", "unknown", ""]:
+    for item in data.get("results", []):
+        name = item.get("trackName", "")
+        artist = item.get("artistName", "Unknown")
+        audio = item.get("previewUrl", "")
+        img = item.get("artworkUrl100", "")
+        if not name or not audio:
             continue
         songs.append({
-            "name": new_name,
-            "artist": new_artist,
-            "audio": audio_list[-1]["url"] if audio_list else "",
-            "img": img_list[-1]["url"] if img_list else ""
+            "name": name,
+            "artist": artist,
+            "audio": audio,
+            "img": img
         })
     return songs
 
@@ -101,14 +65,14 @@ def index():
 @app.route("/suggest")
 def suggest():
     q = request.args.get("q", "")
-    url = f"https://saavn.sumit.dev/api/search/songs?query={q}"
+    url = f"https://itunes.apple.com/search?term={q}&media=music&limit=5"
     try:
         res = requests.get(url).json()
-        results = res.get("data", {}).get("results", [])
+        results = res.get("results", [])
         suggestions = []
-        for item in results[:5]:
-            name = item.get("name", "")
-            artist = item.get("primaryArtists") or ""
+        for item in results:
+            name = item.get("trackName", "")
+            artist = item.get("artistName", "")
             suggestions.append(f"{name} - {artist}")
         return jsonify(suggestions)
     except:
