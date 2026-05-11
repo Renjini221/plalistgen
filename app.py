@@ -47,23 +47,23 @@ def fix_metadata(song_name):
     return song_name, "Unknown"
 
 def get_songs(query):
-    url = f"https://saavn.sumit.co/api/search/songs?query={query}&limit=10"
+    url = f"https://saavn.sumit.dev/api/search/songs?query={query}&limit=10"
     try:
-        res = requests.get(url)          # FIX 1: don't call .json() here
-        res.raise_for_status()           # FIX 1: now correctly called on the response object
-        data = res.json()                # FIX 1: parse JSON once, into `data`
+        res = requests.get(url)         
+        res.raise_for_status()           
+        data = res.json()               
     except:
         return []
 
     songs = []
-    results = data.get("data", {}).get("results", [])   # FIX 2: use `data`, not `res`
+    results = data.get("data", {}).get("results", [])  
     for item in results[:2]:
         audio_list = item.get("downloadUrl", [])
         img_list = item.get("image", [])
         name = item.get("name", "")
         artist = (
             item.get("primaryArtist") or
-            item.get("artist", {}).get("primary", [{}])[0].get("name", "") or  # FIX 3: "artist,{}" → "artist", {}
+            item.get("artist", {}).get("primary", [{}])[0].get("name", "") or 
             item.get("singers") or
             "Unknown"
         )
@@ -101,7 +101,7 @@ def index():
 @app.route("/suggest")
 def suggest():
     q = request.args.get("q", "")
-    url = f"https://saavn.sumit.co/api/search/songs?query={q}"
+    url = f"https://saavn.sumit.dev/api/search/songs?query={q}"
     try:
         res = requests.get(url).json()
         results = res.get("data", {}).get("results", [])
