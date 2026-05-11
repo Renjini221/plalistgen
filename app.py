@@ -49,24 +49,22 @@ def fix_metadata(song_name):
 def get_songs(query):
     url = f"https://saavn.sumit.co/api/search/songs?query={query}&limit=10"
     try:
-        res = requests.get(url).json()
-        res.raise_for_status()
-        data=res.json()
-        print(f"Saavn response keys:{data.keys()}")
-        print(f"Saavn data sample:{str(data)[:500]}")
-
+        res = requests.get(url)          # FIX 1: don't call .json() here
+        res.raise_for_status()           # FIX 1: now correctly called on the response object
+        data = res.json()                # FIX 1: parse JSON once, into `data`
     except:
         return []
+
     songs = []
-    results = res.get("data", {}).get("results", [])
+    results = data.get("data", {}).get("results", [])   # FIX 2: use `data`, not `res`
     for item in results[:2]:
         audio_list = item.get("downloadUrl", [])
         img_list = item.get("image", [])
         name = item.get("name", "")
         artist = (
             item.get("primaryArtist") or
-            item.get("artist,{}").get("primary",[{}])[0].get("name","") or 
-            item.get("singers") or 
+            item.get("artist", {}).get("primary", [{}])[0].get("name", "") or  # FIX 3: "artist,{}" → "artist", {}
+            item.get("singers") or
             "Unknown"
         )
         clean_name = name.split("(")[0].strip()
@@ -74,8 +72,8 @@ def get_songs(query):
             new_name, new_artist = fix_metadata(clean_name)
         else:
             new_name, new_artist = name, artist
-        if not new_name or new_name.lower() in ["title","unknown",""]:
-            continue    
+        if not new_name or new_name.lower() in ["title", "unknown", ""]:
+            continue
         songs.append({
             "name": new_name,
             "artist": new_artist,
