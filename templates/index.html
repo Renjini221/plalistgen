@@ -1,304 +1,245 @@
 <html lang="en">
-        <head>
-            <title>Playlist Generator</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-            <style>
-body{
-    background:#111;
-    color:#eee;
-    font-family:sans-serif;
+<head>
+    <title>Playlist Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+body {
+    background: #111;
+    color: #eee;
+    font-family: sans-serif;
 }
-.wrap{
-    max-width:600px;
-    margin:auto;
-    padding:20px;
+.wrap {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+}
+.head {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+.sub {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+.box {
+    background: #1a1a1a;
+    padding: 15px;
+}
+.input {
+    width: 100%;
+    padding: 10px;
+    background: #222;
+    border: 1px solid #333;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    color: white;
+}
+.btn {
+    width: 100%;
+    padding: 10px;
+    background: #16a34a;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    margin-top: 8px;
+    display: block;
+}
+.btn:hover {
+    background: #15803d;
+}
+.card {
+    display: flex;
+    gap: 12px;
+    background: #1a1a1a;
+    padding: 12px;
+    margin-top: 10px;
+}
+.player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+.bar {
+    flex: 1;
+    height: 5px;
+    background: #333;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.progress {
+    height: 5px;
+    background: #16a34a;
+    width: 0%;
+    border-radius: 5px;
+}
+.player button {
+    background: #16a34a;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#suggestions {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    margin-top: 5px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+#suggestions div {
+    padding: 8px;
+    cursor: pointer;
+}
+#suggestions div:hover {
+    background: #222;
+}
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="head">Playlist Generator</div>
+        <div class="sub">Type a mood, artist or song - we will find the music</div>
+        <div class="box">
+            <form method="POST">
+                <input class="input" name="prompt" id="searchBox" autocomplete="off" required>
+                <div id="suggestions"></div>
+                <button class="btn" type="submit">Generate</button>
+            </form>
+        </div>
 
-}
-.head{
-    font-size:22px;
-    margin-bottom:10px;
-}
-.sub{
-    color:#aaa;
-    margin-bottom:20px;
-}
-.box{
-    background:#1a1a1a;
-    padding:15px;
-}
-.input{
-    width:100%;
-    padding:10px;
-    background:#222;
-    border:1px solid #333;
-    border-radius:6px;
-    margin-bottom:10px;
-    color:white;
-}
-.btn{
-    width:100%;
-    padding:10px;
-    background:#16a34a;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-.btn two{
-    width:100%;
-    padding:10px;
-    background:#16a34a;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-.btn:hover{
-    background:#15803d;
-}
-.card{
-    display:flex;
-    gap:12px;
-    background:#1a1a1a;
-    padding:12px;
-    margin-top:10px;
-}
-.player{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-top:8px;
-}
-.bar{
-    flex:1;
-    height:5px;
-    background:#333;
-    border-radius:5px;
-    cursor:pointer;
-}
-.progress{
-    height:5px;
-    background:#16a34a;
-    width:0%;
-    border-radius:5px;
-}
-.player button{
-    background:#16a34a;
-    border:none;
-    color:white;
-    padding:5px 10px;
-    border-radius:4px;
-}
-#suggestions{
-    background:#1a1a1a;
-    border:1px solid #333;
-    border-radius:6px;
-    margin-top:5px;
-    max-height:150px;
-    overflow-y:auto;
-}
-#suggestions div{
-    padding:8px;
-    cursor:pointer;
-}
-.loadbtn{
-    .loadbtn{
-     width:100%;
-    padding:10px;
-    background:#16a34a;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
+        {% if songs %}
+            {% for song in songs %}
+            <div class="card">
+                {% if song.img %}
+                <img src="{{ song.img }}" style="width:60px;height:60px;object-fit:cover;">
+                {% endif %}
+                <div style="flex:1">
+                    <div class="title">{{ song.name }}</div>
+                    <div class="artist">{{ song.artist or "Unknown" }}</div>
+                    {% if song.audio %}
+                    <audio src="{{ song.audio }}"></audio>  <!-- FIX 3: moved outside .player -->
+                    <div class="player">
+                        <button onclick="playSong(this)">▶</button>
+                        <div class="bar">
+                            <div class="progress"></div>
+                        </div>
+                        <span class="time">0:00</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div style="color:#aaa;margin-top:20px;">No playlist yet</div>
+        {% endif %}
 
-}
-}
-
-            </style>
-            </head>
-            <body>
-                <div class="wrap">
-<div class="head">Playlist Generator</div>
-<div class="sub">Type a mood,artist or song - we will find the music</div>
-<div class="box">
-    <form method="POST">
-        <input class="input" name="prompt" id="searchBox" autocomplete="off" required>
-        <div id="suggestions"></div>
-        <button class="btn">Generate</button>
-    </form>
-</div>
-{% if songs %}
-{% for song in songs%}
-<div class ="card">
-{% if song.img%}
-<img src="{{song.img}}" class="img" style="width:60px;height:60px;object-fit:cover;">
-{% endif%}
-<div style="flex:1">
-    <div class="title">{{song.name}}</div>
-    <div class="artist">{{song.artist or "Unknown"}}</div>
-{% if song.audio%}
-
-<div class="player"> 
-    <button onclick="playSong(this)">▶</button>
-    <div class="bar">
-        <div class="progress"></div>
+        <!-- FIX 5: buttons inside .wrap -->
+        <button onclick="downloadPlaylist()" class="btn">Download .txt</button>
+        <button onclick="savePlaylist()" class="btn">Save Playlist</button>
+        <a href="/load"><button class="btn">Load Playlist</button></a>
     </div>
-    <span class="time">0:00</span>
-    <audio src="{{ song.audio}}"></audio>
-</div>
 
-{% endif%}
-</div>
+    <script>
+    function playSong(btn) {
+        const player = btn.parentElement;
+        const card = player.closest(".card");
+        const audio = card.querySelector("audio"); // FIX 3: was player.querySelector("audio")
+        const progress = player.querySelector(".progress");
+        const time = player.querySelector(".time");
 
-</div>
-{%endfor%}
-{%else%}
-<div class="empty"
->No playlist yet</div>   
-{% endif %}
-</div>
-<button onclick="downloadPlaylist()" class="btn">
-Download .txt
+        document.querySelectorAll("audio").forEach(a => {
+            if (a !== audio) a.pause();
+        });
+        document.querySelectorAll(".player button").forEach(b => {
+            if (b !== btn) b.innerText = "▶";
+        });
 
-</button>
-<button onclick="savePlaylist()" class="btn">
-    Save Playlist
-</button>
+        if (audio.paused) {
+            audio.play().then(() => { btn.innerText = "⏸"; });
+        } else {
+            audio.pause();
+            btn.innerText = "▶";
+        }
 
-<a href="load" class="loadbtn">
-  <button class="loadbtn">Load Playlist</button>
-</a>
-            </body>
-            <script>
-            function playSong(btn){
-                const player = btn.parentElement;
-                const card = player.closest(".card");
-                const audio = player.querySelector("audio");
-                const progress = player.querySelector(".progress");
-                
-                const time= player.querySelector(".time");
+        audio.ontimeupdate = () => {
+            let percent = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+            progress.style.width = percent + "%";
+            let min = Math.floor(audio.currentTime / 60);
+            let sec = Math.floor(audio.currentTime % 60);
+            sec = sec < 10 ? "0" + sec : sec;
+            time.innerText = min + ":" + sec;
+        };
 
-                document.querySelectorAll("audio").forEach(a => {
-                    if(a !== audio){
-                        a.pause();
-                    }
-                });
-document.querySelectorAll(".player button") .forEach(b=>{
-    if(b !== btn) b.innerText="▶";
-})
-                 if (audio.paused){
-                    audio.play().then(() => {
-                    btn.innerText = "⏸";
-                });
-                 }else{
-                    audio.pause();
-                    btn.innerText="▶"
-                 }
-                 audio.ontimeupdate = () => {
-                    let percent = audio.duration ? (audio.currentTime / audio.duration)*100: 0;
-                    progress.style.width = percent + "%";
+        audio.onended = () => {
+            btn.innerText = "▶";
+            const nextCard = card.nextElementSibling;
+            if (nextCard) {
+                const nextBtn = nextCard.querySelector(".player button");
+                if (nextBtn) nextBtn.click();
+            }
+        };
+    }
 
-                    let min = Math.floor(audio.currentTime/60);
-                    let sec = Math.floor(audio.currentTime % 60);
-                    sec = sec < 10 ? "0" + sec : sec;
+    function downloadPlaylist() {
+        let text = "";
+        document.querySelectorAll(".card").forEach(card => {
+            const title = card.querySelector(".title")?.innerText || "";
+            const artist = card.querySelector(".artist")?.innerText || "";
+            if (title) text += title + " - " + artist + "\n";
+        });
+        const blob = new Blob([text], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "playlist.txt";
+        a.click();
+    }
 
-                    time.innerText = min + ":" + sec;
-                 };
-                 audio.onended =() => {
-                    const nextCard = card.nextElementSibling;
+    function savePlaylist() {
+        const songs = [];
+        document.querySelectorAll(".card").forEach(card => {
+            const title = card.querySelector(".title")?.innerText?.trim();
+            const artist = card.querySelector(".artist")?.innerText?.trim() || "Unknown";
+            const audio = card.querySelector("audio")?.src || "";
+            const img = card.querySelector("img")?.src || "";
+            if (title && audio) songs.push({ name: title, artist, audio, img });
+        });
 
-                    if(nextCard){
-                        const nextBtn = nextCard.querySelector("button");
-                        if(nextBtn){
-                            nextBtn.click();
-                        }
-                    }
-                 };
-                }
-                function downloadPlaylist(){
-                    let text = "";
+        if (songs.length === 0) { alert("No valid songs to save!"); return; }
 
-                document.querySelectorAll(".card").forEach(card =>{
-                    const title = card.querySelector(".title")?.innerText || "";
-                    const artist = card.querySelector(".artist")?.innerText || "";
-                    if(title){
-                        text += title + "-" + artist + "\n";
+        let all = JSON.parse(localStorage.getItem("playlists")) || {};
+        const name = document.getElementById("searchBox").value || "My Playlist";
+        all[name] = songs;
+        localStorage.setItem("playlists", JSON.stringify(all));
+        alert("Playlist saved!");
+    }
 
-                    }
-                });
-                const blob = new Blob([text],{type:"text/plain"});
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = "playlist.txt";
-                a.click();
+    const searchBox = document.getElementById("searchBox");
+    const suggestionsBox = document.getElementById("suggestions");
 
-
-                }
-                const searchBox = document.getElementById("searchBox");
-                const suggestionsBox = document.getElementById("suggestions");
-
-                searchBox.addEventListener("input",async() =>{
-                    const query = searchBox.value.trim();
-
-                    if(query.length < 2){
-                        suggestionsBox.innerHTML="";
-                        return;
-                    }
-                    try{
-                        const res = await fetch(`/suggest?q=${query}`);
-                        const data = await res.json();
-
-                        suggestionsBox.innerHTML = data.map(s =>
-                            `<div onclick="selectSuggestion('${s}')">${s}</div>`
-                        ).join("");
-                    }catch(e){
-                        console.log(e);
-                        suggestionBox.innerHTML = "";
-                    }
-                });
-
-                function selectSuggestion(text){
-                    searchBox.value = text;
-                    suggestionsBox.innerHTML= "";
-                }
-               function savePlaylist(){
-    const songs = [];
-
-    document.querySelectorAll(".card").forEach(card=>{
-        const titleEl = card.querySelector(".title");
-        const artistEl = card.querySelector(".artist");
-        const audioEl = card.querySelector("audio");
-        const imgEl = card.querySelector("img");
-
-        const title = titleEl ? titleEl.innerText.trim() : null;
-        const artist = artistEl ? artistEl.innerText.trim() : "Unknown";
-        const audio = audioEl ? audioEl.src : "";
-        const img = imgEl ? imgEl.src : "";
-
-        
-        if(title && audio){
-            songs.push({
-                name: title,
-                artist: artist,
-                audio: audio,
-                img: img
-            });
+    searchBox.addEventListener("input", async () => {
+        const query = searchBox.value.trim();
+        if (query.length < 2) { suggestionsBox.innerHTML = ""; return; }
+        try {
+            const res = await fetch(`/suggest?q=${query}`);
+            const data = await res.json();
+            suggestionsBox.innerHTML = data.map(s =>
+                `<div onclick="selectSuggestion('${s.replace(/'/g, "\\'")}')">${s}</div>`
+            ).join("");
+        } catch (e) {
+            console.log(e);
+            suggestionsBox.innerHTML = ""; // FIX 4: was suggestionBox (typo)
         }
     });
 
-    if(songs.length === 0){
-        alert("No valid songs to save!");
-        return;
+    function selectSuggestion(text) {
+        searchBox.value = text;
+        suggestionsBox.innerHTML = "";
     }
-
-    let all = JSON.parse(localStorage.getItem("playlists")) || {};
-    const name = document.getElementById("searchBox").value || "My Playlist";
-
-    all[name] = songs;
-
-    localStorage.setItem("playlists", JSON.stringify(all));
-
-    console.log("Saved:", songs); 
-    alert("Playlist saved");
-}
-                
-            </script>
+    </script>
+</body>
 </html>
